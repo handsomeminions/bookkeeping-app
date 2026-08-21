@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <view class="stats-page">
     <!-- 顶部控制区：粒度选择 + 周期切换 -->
     <view class="control-card">
@@ -236,7 +236,7 @@ import AppTabBar from '@/components/AppTabBar/AppTabBar.vue'
 import CalendarPicker from '@/components/CalendarPicker/CalendarPicker.vue'
 import { getCategoryById } from '@/utils/categories.js'
 import { getCurrentTheme } from '@/utils/themes.js'
-import { formatMoney, getCurrentMonth, formatMonth, formatMonthChinese, getToday } from '@/utils/format.js'
+import { formatMoney, getCurrentMonth, formatMonth, formatMonthChinese, getToday, parseDate } from '@/utils/format.js'
 
 const PIE_COLORS = ['#3b82f6','#f59e0b','#8b5cf6','#ef4444','#10b981','#ec4899','#06b6d4','#84cc16','#f97316','#64748b','#a855f7','#14b8a6','#e11d48','#6366f1','#f43f5e']
 
@@ -280,7 +280,7 @@ export default {
     periodTitle() {
       if (this.granularity === 'year') return this.currentYear + '年'
       if (this.granularity === 'week') {
-        const ws = new Date(this.currentWeekStart)
+        const ws = parseDate(this.currentWeekStart)
         const we = new Date(ws)
         we.setDate(ws.getDate() + 6)
         return (ws.getMonth() + 1) + '月' + ws.getDate() + '日-' + (we.getMonth() + 1) + '月' + we.getDate() + '日'
@@ -305,7 +305,7 @@ export default {
       if (this.granularity === 'year') return this.currentYear < new Date().getFullYear()
       if (this.granularity === 'week') {
         const today = new Date()
-        const weekStart = new Date(this.currentWeekStart)
+        const weekStart = parseDate(this.currentWeekStart)
         weekStart.setDate(weekStart.getDate() + 7)
         return weekStart <= today
       }
@@ -370,7 +370,7 @@ export default {
     },
     weekCalendarCells() {
       if (this.granularity !== 'week') return []
-      const ws = new Date(this.currentWeekStart)
+      const ws = parseDate(this.currentWeekStart)
       const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
       const today = new Date()
       const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0')
@@ -581,7 +581,7 @@ export default {
       return nice * mag
     },
     getWeekStart(dateStr) {
-      const d = new Date(dateStr)
+      const d = parseDate(dateStr)
       const day = d.getDay() || 7
       d.setDate(d.getDate() - day + 1)
       return this.fmtDate(d)
@@ -621,7 +621,7 @@ export default {
         const [y, m] = this.currentMonth.split('-').map(Number)
         this.currentMonth = formatMonth(new Date(y, m - 2, 1))
       } else {
-        const d = new Date(this.currentWeekStart)
+        const d = parseDate(this.currentWeekStart)
         d.setDate(d.getDate() - 7)
         this.currentWeekStart = this.fmtDate(d)
       }
@@ -635,7 +635,7 @@ export default {
         const [y, m] = this.currentMonth.split('-').map(Number)
         this.currentMonth = formatMonth(new Date(y, m, 1))
       } else {
-        const d = new Date(this.currentWeekStart)
+        const d = parseDate(this.currentWeekStart)
         d.setDate(d.getDate() + 7)
         this.currentWeekStart = this.fmtDate(d)
       }
@@ -659,7 +659,7 @@ export default {
           periodRecords = allRecords.filter(r => r.date.startsWith(this.currentMonth))
           this.computeDailyExpensesMonth(periodRecords)
         } else if (this.granularity === 'week') {
-          const ws = new Date(this.currentWeekStart)
+          const ws = parseDate(this.currentWeekStart)
           const we = new Date(ws)
           we.setDate(ws.getDate() + 6)
           const start = this.fmtDate(ws)
@@ -744,7 +744,7 @@ export default {
       } else if (this.granularity === 'week') {
         // 周粒度：选中周 + 前5周，共6周
         const weeks = []
-        const ws = new Date(this.currentWeekStart)
+        const ws = parseDate(this.currentWeekStart)
         for (let i = 5; i >= 0; i--) {
           const d = new Date(ws)
           d.setDate(d.getDate() - i * 7)
@@ -806,7 +806,7 @@ export default {
     },
     computeDailyExpensesWeek(records) {
       const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-      const ws = new Date(this.currentWeekStart)
+      const ws = parseDate(this.currentWeekStart)
       this.dailyExpenses = []
       for (let i = 0; i < 7; i++) {
         const d = new Date(ws)
@@ -1209,5 +1209,7 @@ export default {
 .cat-rank-sub-note { font-size: 22rpx; color: var(--theme-text-hint); }
 .cat-rank-sub-amount { font-size: 26rpx; font-weight: 600; }
 </style>
+
+
 
 
