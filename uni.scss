@@ -1,0 +1,211 @@
+/* ==================== 全局样式系统 v2.0 ==================== */
+
+/* 主题色系 */
+$primary: #6366f1;
+$primary-light: #818cf8;
+$primary-dark: #4f46e5;
+$gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$gradient-blue: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+$gradient-warm: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+$gradient-green: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+$gradient-orange: linear-gradient(135deg, #fa8231 0%, #f6a609 100%);
+$gradient-purple: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+
+/* 支出/收入色 */
+$expense-color: #ef4444;
+$income-color: #10b981;
+$budget-warn: #f59e0b;
+$budget-over: #ef4444;
+
+/* 背景色 */
+$bg-page: #f2f3f7;
+$bg-card: #ffffff;
+
+/* 文字色 */
+$text-primary: #1a1a2e;
+$text-secondary: #6b7280;
+$text-tertiary: #9ca3af;
+$text-placeholder: #d1d5db;
+
+/* 圆角 */
+$radius-sm: 12rpx;
+$radius-md: 20rpx;
+$radius-lg: 32rpx;
+$radius-xl: 48rpx;
+
+/* 阴影 */
+$shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 8rpx 40rpx rgba(0, 0, 0, 0.08);
+$shadow-primary: 0 4rpx 24rpx rgba(99, 102, 241, 0.3);
+
+/* ========== 通用组件类 ========== */
+
+/* 页面容器 */
+.page-bg {
+  min-height: 100vh;
+  background: $bg-page;
+}
+
+/* 卡片 */
+.card {
+  background: $bg-card;
+  border-radius: $radius-lg;
+  margin: 20rpx 24rpx;
+  padding: 32rpx;
+  box-shadow: $shadow-md;
+}
+
+.card-flat {
+  background: $bg-card;
+  border-radius: $radius-lg;
+  margin: 20rpx 24rpx;
+  padding: 32rpx;
+}
+
+/* 收入/支出文字 */
+.income-text { color: $income-color; }
+.expense-text { color: $expense-color; }
+
+/* 空状态 */
+.empty {
+  text-align: center;
+  padding: 140rpx 0;
+}
+.empty-icon {
+  font-size: 100rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.6;
+}
+.empty-text {
+  font-size: 30rpx;
+  color: $text-tertiary;
+  margin-bottom: 12rpx;
+}
+.empty-sub {
+  font-size: 24rpx;
+  color: $text-placeholder;
+}
+
+/* 按钮 */
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border-radius: $radius-lg;
+  font-size: 32rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  box-shadow: $shadow-primary;
+  border: none;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+}
+
+.btn-primary[disabled] {
+  opacity: 0.4;
+  box-shadow: none;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  color: #fff;
+  border-radius: $radius-md;
+  font-size: 30rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+}
+
+/* 浮动添加按钮 */
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: 180rpx;
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-size: 56rpx;
+  text-align: center;
+  line-height: 112rpx;
+  box-shadow: 0 8rpx 32rpx rgba(99, 102, 241, 0.5);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 列表项 */
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f3f4f6;
+}
+.list-item:last-child { border-bottom: none; }
+
+/* 分类圆形图标 */
+.category-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+/* 类型切换标签 */
+.type-tabs {
+  display: flex;
+  background: #f3f4f6;
+  border-radius: $radius-lg;
+  margin: 24rpx;
+  padding: 6rpx;
+}
+.type-tab {
+  flex: 1;
+  text-align: center;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 30rpx;
+  border-radius: $radius-md;
+  color: $text-secondary;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+.type-tab.active {
+  color: #fff;
+  font-weight: bold;
+  box-shadow: $shadow-sm;
+}
+.type-tab.active.expense {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+}
+.type-tab.active.income {
+  background: linear-gradient(135deg, #10b981, #34d399);
+}
+
+/* 进度条 */
+.progress-bar-bg {
+  height: 12rpx;
+  background: #f3f4f6;
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  border-radius: 6rpx;
+  transition: width 0.3s;
+}
+
+/* 段落标题 */
+.section-title {
+  font-size: 28rpx;
+  color: $text-tertiary;
+  font-weight: 500;
+  margin-bottom: 20rpx;
+  letter-spacing: 2rpx;
+}

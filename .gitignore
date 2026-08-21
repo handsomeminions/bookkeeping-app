@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+unpackage/
+
+# HBuilderX 本地配置
+.hbuilderx/
+.local_changes/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Editor / OS
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+
+# 数据库/本地数据（如果有）
+*.db
+*.sqlite

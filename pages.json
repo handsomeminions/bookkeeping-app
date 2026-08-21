@@ -1,0 +1,85 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/statistics/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/budget/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/settings/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/add/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/category-manage/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/theme/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "",
+    "navigationBarBackgroundColor": "#6366f1",
+    "backgroundColor": "#f2f3f7"
+  },
+  "tabBar": {
+    "borderStyle": "white",
+    "backgroundColor": "#ffffff",
+    "color": "#9ca3af",
+    "selectedColor": "#6366f1",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "static/tab-icon.png",
+        "selectedIconPath": "static/tab-icon-active.png",
+        "text": "账单"
+      },
+      {
+        "pagePath": "pages/statistics/index",
+        "iconPath": "static/tab-icon.png",
+        "selectedIconPath": "static/tab-icon-active.png",
+        "text": "统计"
+      },
+      {
+        "pagePath": "pages/budget/index",
+        "iconPath": "static/tab-icon.png",
+        "selectedIconPath": "static/tab-icon-active.png",
+        "text": "预算"
+      },
+      {
+        "pagePath": "pages/settings/index",
+        "iconPath": "static/tab-icon.png",
+        "selectedIconPath": "static/tab-icon-active.png",
+        "text": "设置"
+      }
+    ]
+  }
+}
