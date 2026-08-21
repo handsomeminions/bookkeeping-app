@@ -218,4 +218,3 @@ bookkeeping-app/
 
 祝你记账顺利！🎉
 
-> AI生成
