@@ -78,12 +78,25 @@ export function formatShortDate(dateStr) {
 }
 
 /**
+ * 按本地时区解析 YYYY-MM-DD 字符串
+ * 注意：不能直接用 new Date('YYYY-MM-DD')，该方式按 UTC 解析，
+ * 在 UTC 以西时区（如美洲）会回退一天导致星期/日期计算错误。
+ * @param {string} dateStr YYYY-MM-DD
+ * @returns {Date}
+ */
+export function parseDate(dateStr) {
+  if (!dateStr) return new Date()
+  const parts = String(dateStr).split('-').map(Number)
+  return new Date(parts[0], (parts[1] || 1) - 1, parts[2] || 1)
+}
+
+/**
  * 获取星期几的中文
  * @param {string} dateStr YYYY-MM-DD
  */
 export function getWeekdayText(dateStr) {
   if (!dateStr) return ''
-  const d = new Date(dateStr)
+  const d = parseDate(dateStr)
   const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
   return weekdays[d.getDay()]
 }
@@ -108,6 +121,7 @@ export default {
   formatMonth,
   getMonthFromDate,
   formatShortDate,
+  parseDate,
   getWeekdayText,
   formatMonthChinese
 }

@@ -167,9 +167,12 @@ export default {
     statusText() { return this.isOver ? '已超支' : this.percent > 80 ? '接近预算' : '消费正常' },
     barColor() { return this.isOver ? this.theme.expense : this.percent > 80 ? '#f59e0b' : this.theme.gradient },
     avgDaily() {
-      const d = new Date()
-      const day = d.getDate()
-      return this.summary.expense / day
+      // 当前月按已过天数算，历史月按该月总天数算
+      const now = new Date()
+      const [y, m] = this.currentMonth.split('-').map(Number)
+      const isCurrentMonth = y === now.getFullYear() && m === now.getMonth() + 1
+      const days = isCurrentMonth ? now.getDate() : new Date(y, m, 0).getDate()
+      return this.summary.expense / days
     },
     canNext() { return this.currentMonth < getCurrentMonth() }
   },
