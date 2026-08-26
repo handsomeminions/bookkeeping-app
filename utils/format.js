@@ -78,6 +78,16 @@ export function formatShortDate(dateStr) {
 }
 
 /**
+ * 格式化日期显示（完整年月日）
+ * @param {string} dateStr YYYY-MM-DD
+ * @returns {string} YYYY-MM-DD
+ */
+export function formatFullDate(dateStr) {
+  if (!dateStr) return ''
+  return dateStr
+}
+
+/**
  * 获取星期几的中文
  * @param {string} dateStr YYYY-MM-DD
  */
@@ -108,6 +118,7 @@ export default {
   formatMonth,
   getMonthFromDate,
   formatShortDate,
+  formatFullDate,
   getWeekdayText,
   formatMonthChinese
 }

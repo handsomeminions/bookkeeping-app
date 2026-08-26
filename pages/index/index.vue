@@ -6,10 +6,15 @@
         <text class="app-title">{{ appTitle }}</text>
         <text class="app-subtitle">{{ appSubtitle }}</text>
       </view>
-      <view class="month-picker" @tap="showMonthCalendar = true">
-        <AppIcon name="calendar" :size="28" :color="theme.isDark ? 'rgba(255,255,255,0.6)' : theme.textSub" />
-        <text class="month-picker-text">{{ monthDisplay }}</text>
-        <text class="month-picker-arrow">▾</text>
+      <view class="nav-right">
+        <view class="search-btn" @tap="goSearch">
+          <AppIcon name="search" :size="36" :color="theme.isDark ? 'rgba(255,255,255,0.7)' : theme.textSub" />
+        </view>
+        <view class="month-picker" @tap="showMonthCalendar = true">
+          <AppIcon name="calendar" :size="28" :color="theme.isDark ? 'rgba(255,255,255,0.6)' : theme.textSub" />
+          <text class="month-picker-text">{{ monthDisplay }}</text>
+          <text class="month-picker-arrow">▾</text>
+        </view>
       </view>
     </view>
 
@@ -32,8 +37,11 @@
             <text class="hero-sub-text negative">支出超过收入，注意控制</text>
           </view>
         </view>
-        <view class="hero-top-right">
-          <view class="hero-circle">
+<view class="hero-top-right">
+          <view class="hero-pet-wrap" v-if="petEnabled">
+            <PetSprite :pet-size="200" />
+          </view>
+          <view class="hero-circle" v-else>
             <AppIcon name="wallet" :size="48" :color="theme.primary" />
           </view>
         </view>
@@ -65,8 +73,11 @@
         <view class="hero-stat-divider"></view>
         <!-- 剩余预算 -->
         <view class="hero-stat">
-          <view class="hero-stat-icon remain-bg">
-            <AppIcon name="wallet" :size="24" :color="theme.primary" />
+          <view class="remain-ring-wrap">
+            <image class="remain-ring-img" :src="remainRingSvg" mode="aspectFit" />
+            <view class="hero-stat-icon remain-icon-inner">
+              <AppIcon name="wallet" :size="24" :color="theme.primary" />
+            </view>
           </view>
           <view class="hero-stat-text">
             <text class="hero-stat-label">剩余预算</text>
@@ -205,15 +216,17 @@ import db from '@/utils/db.js'
 import AppIcon from '@/components/AppIcon/AppIcon.vue'
 import AppTabBar from '@/components/AppTabBar/AppTabBar.vue'
 import CalendarPicker from '@/components/CalendarPicker/CalendarPicker.vue'
+import PetSprite from '@/components/PetSprite/PetSprite.vue'
 import { getCategoryById } from '@/utils/categories.js'
 import { getCurrentTheme } from '@/utils/themes.js'
 import { formatMoney, getCurrentMonth, formatShortDate, getWeekdayText, formatMonthChinese, getToday } from '@/utils/format.js'
 
 export default {
-  components: { AppIcon, AppTabBar, CalendarPicker },
+  components: { AppIcon, AppTabBar, CalendarPicker, PetSprite },
   data() {
     return {
       theme: getCurrentTheme(),
+      petEnabled: uni.getStorageSync('pet_enabled') !== false,
       currentMonth: '',
       monthDisplay: '',
       summary: { income: 0, expense: 0 },
@@ -231,10 +244,40 @@ export default {
     }
   },
   computed: {
-    balance() { return this.summary.income - this.summary.expense }
+    balance() { return this.summary.income - this.summary.expense },
+    remainPercent() {
+      if (this.budget <= 0) return 0
+      const remain = this.budget - this.summary.expense
+      const pct = (remain / this.budget) * 100
+      return Math.max(0, Math.min(100, pct))
+    },
+    remainRingColor() {
+      if (this.budget <= 0) return '#d1d5db'
+      const remain = this.budget - this.summary.expense
+      if (remain < 0) return '#fca5a5'
+      const pct = (remain / this.budget) * 100
+      if (pct >= 50) return '#6ee7b7'
+      if (pct >= 20) return '#fcd34d'
+      return '#fca5a5'
+    },
+    remainRingSvg() {
+      const r = 16.5
+      const c = 2 * Math.PI * r
+      const offset = c * (1 - this.remainPercent / 100)
+      const color = this.remainRingColor
+      const bg = 'rgba(0,0,0,0.04)'
+      const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">'
+        + '<circle cx="18" cy="18" r="' + r + '" fill="none" stroke="' + bg + '" stroke-width="2"/>'
+        + '<circle cx="18" cy="18" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="2" '
+        + 'stroke-dasharray="' + c.toFixed(2) + '" stroke-dashoffset="' + offset.toFixed(2) + '" '
+        + 'transform="rotate(-90 18 18)" stroke-linecap="round"/>'
+        + '</svg>'
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
+    }
   },
   created() {
     uni.$on('themeChange', (theme) => { this.theme = theme })
+    uni.$on('petToggle', (enabled) => { this.petEnabled = enabled })
   },
   onLoad() { this.currentMonth = getCurrentMonth(); this.todayStr = getToday(); this.loadAppTitle() },
   onShow() {
@@ -244,6 +287,10 @@ export default {
     this.loadData()
   },
   onPullDownRefresh() { this.loadData().finally(() => uni.stopPullDownRefresh()) },
+  onUnload() {
+    uni.$off('themeChange')
+    uni.$off('petToggle')
+  },
   methods: {
     formatMoney, getCategoryById, formatShortDate, getWeekdayText,
     loadAppTitle() {
@@ -296,6 +343,7 @@ export default {
       this.groupedRecords = Object.values(map).sort((a, b) => b.date.localeCompare(a.date))
     },
     goAdd() { uni.navigateTo({ url: '/pages/add/index?month=' + this.currentMonth }) },
+    goSearch() { uni.navigateTo({ url: '/pages/search/index' }) },
     goEdit(record) { uni.navigateTo({ url: '/pages/add/index?id=' + record.id }) },
     previewRecordImages(record) {
       let images = record.images
@@ -340,6 +388,14 @@ export default {
   padding: 16rpx 32rpx 0;
 }
 .nav-left { display: flex; flex-direction: column; }
+.nav-right { display: flex; align-items: center; gap: 16rpx; }
+.search-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 64rpx; height: 64rpx; border-radius: 50%;
+  background: var(--theme-card-bg);
+  border: 1rpx solid var(--theme-divider);
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.03);
+}
 .app-title { font-size: 40rpx; font-weight: 800; color: var(--theme-text-main); letter-spacing: 1rpx; }
 .app-subtitle { font-size: 22rpx; color: var(--theme-text-hint); margin-top: 4rpx; }
 .month-picker {
@@ -373,7 +429,11 @@ export default {
 .hero-amount.expense-text { color: var(--theme-expense); }
 .hero-sub-text { font-size: 22rpx; color: var(--theme-text-hint); }
 .hero-sub-text.negative { color: var(--theme-expense); }
-.hero-top-right { display: flex; align-items: center; justify-content: center; }
+.hero-top-right { display: flex; align-items: center; justify-content: center; margin-right: 40rpx; }
+.hero-pet-wrap {
+  display: flex; align-items: center; justify-content: center;
+  width: 260rpx; height: 260rpx;
+}
 .hero-circle {
   width: 96rpx; height: 96rpx; border-radius: 50%;
   background: var(--theme-tag-bg);
@@ -394,6 +454,21 @@ export default {
 .income-bg { background: rgba(16,185,129,0.1); }
 .budget-bg { background: rgba(245,158,11,0.1); }
 .remain-bg { background: rgba(99,102,241,0.1); }
+.remain-ring-wrap {
+  position: relative;
+  width: 76rpx; height: 76rpx;
+  display: flex; align-items: center; justify-content: center;
+  margin-right: 12rpx; flex-shrink: 0;
+}
+.remain-ring-img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 76rpx; height: 76rpx;
+}
+.remain-icon-inner {
+  width: 52rpx; height: 52rpx;
+  margin-right: 0;
+}
 .hero-stat-text { display: flex; flex-direction: column; }
 .hero-stat-label { font-size: 20rpx; color: var(--theme-text-hint); }
 .hero-stat-value { font-size: 28rpx; font-weight: 700; color: var(--theme-text-main); margin-top: 2rpx; }

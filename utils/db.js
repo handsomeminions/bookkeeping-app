@@ -327,8 +327,17 @@ export function getTodaySummary(bookId = 0) {
 
 export function searchRecords(keyword, bookId = 0) {
   return new Promise((resolve, reject) => {
+    // 把关键词拆成单字，任意一个字匹配即可（如搜"衣服"能匹配到"服饰"中的"服"）
+    const chars = Array.from(keyword).filter(c => c.trim())
     // #ifdef APP-PLUS
-    const sql = `SELECT * FROM ${TABLE_RECORDS} WHERE book_id=${bookId} AND (category LIKE '%${escapeStr(keyword)}%' OR note LIKE '%${escapeStr(keyword)}%') ORDER BY date DESC, created_at DESC LIMIT 50`
+    let charConds = ''
+    if (chars.length > 0) {
+      charConds = chars.map(c => {
+        const ch = escapeStr(c)
+        return `(category LIKE '%${ch}%' OR note LIKE '%${ch}%' OR printf('%.2f', amount / 100.0) LIKE '%${ch}%')`
+      }).join(' OR ')
+    }
+    const sql = `SELECT * FROM ${TABLE_RECORDS} WHERE book_id=${bookId}${charConds ? ' AND (' + charConds + ')' : ''} ORDER BY date DESC, created_at DESC LIMIT 50`
     plus.sqlite.selectSql({
       name: DB_NAME, sql: sql,
       success: function(e) { resolve((e || []).map(r => ({ ...r, amount: r.amount / 100, images: r.images ? (typeof r.images === 'string' ? JSON.parse(r.images) : r.images) : [] }))) },
@@ -337,7 +346,15 @@ export function searchRecords(keyword, bookId = 0) {
     // #endif
     // #ifndef APP-PLUS
     resolve(getLocalRecords()
-      .filter(r => (r.book_id || 0) === bookId && (r.category.includes(keyword) || (r.note || '').includes(keyword)))
+      .filter(r => {
+        if ((r.book_id || 0) !== bookId) return false
+        if (chars.length === 0) return false
+        const cat = r.category || ''
+        const note = r.note || ''
+        const amt = (r.amount / 100).toFixed(2)
+        // 任意一个字出现在 category/note/amount 中即可
+        return chars.some(c => cat.includes(c) || note.includes(c) || amt.includes(c))
+      })
       .sort((a, b) => b.created_at - a.created_at).slice(0, 50)
       .map(r => ({ ...r, amount: r.amount / 100 })))
     // #endif

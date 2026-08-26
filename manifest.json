@@ -1,8 +1,8 @@
 {
-    "name" : "记账本",
+    "name" : "小本本",
     "appid" : "__UNI__1F4FEC3",
     "description" : "简单好用的个人记账本，记个蛋你记不记",
-    "versionName" : "1.0.0",
+    "versionName" : "1.0.1",
     "versionCode" : "100",
     "transformPx" : false,
     "app-plus" : {

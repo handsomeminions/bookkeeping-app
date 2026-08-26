@@ -14,6 +14,16 @@
     <!-- 常用功能 -->
     <view class="section-title">常用功能</view>
     <view class="func-card">
+      <view class="func-item">
+        <view class="func-icon pet-icon-bg">
+          <AppIcon name="heart" :size="40" :color="currentTheme.primary" />
+        </view>
+        <view class="func-info">
+          <text class="func-name">桌面宠物</text>
+          <text class="func-desc">萌宠陪你记账</text>
+        </view>
+        <switch :checked="petEnabled" @change="togglePet" color="#6366f1" class="pet-switch" />
+      </view>
       <view class="func-item" @tap="goTheme">
         <view class="func-icon theme-preview-icon" :style="{ background: themePreviewGradient }">
           <AppIcon name="star" :size="40" color="#fff" />
@@ -89,7 +99,8 @@ export default {
   components: { AppIcon, AppTabBar },
   data() {
     return {
-      currentTheme: getCurrentTheme()
+      currentTheme: getCurrentTheme(),
+      petEnabled: uni.getStorageSync('pet_enabled') !== false
     }
   },
   computed: {
@@ -107,6 +118,11 @@ export default {
   },
   methods: {
     formatMoney,
+    togglePet(e) {
+      this.petEnabled = e.detail.value
+      uni.setStorageSync('pet_enabled', e.detail.value)
+      uni.$emit('petToggle', e.detail.value)
+    },
     goTheme() { uni.navigateTo({ url: '/pages/theme/index' }) },
     goCategoryManage() { uni.navigateTo({ url: '/pages/category-manage/index' }) },
     async exportData() {
@@ -263,6 +279,8 @@ export default {
 .func-desc { font-size: 24rpx; color: var(--theme-text-hint); margin-top: 4rpx; }
 .danger-text { color: var(--theme-expense) !important; }
 .func-arrow { font-size: 36rpx; color: var(--theme-text-disabled); }
+.pet-icon-bg { background: rgba(99,102,241,0.1); }
+.pet-switch { transform: scale(0.85); }
 
 /* 页脚 */
 .footer-text { text-align: center; font-size: 22rpx; color: var(--theme-text-disabled); margin-top: 40rpx; padding: 0 48rpx; line-height: 1.6; }
